@@ -1,0 +1,45 @@
+#include <HX711_ADC.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+HX711_ADC LoadCell(6, 7); // dt pin 6, sck pin 7
+LiquidCrystal_I2C lcd(0x27, 16, 2); // adjust I2C address if needed
+
+void setup() {
+  Serial.begin(9600);
+
+  LoadCell.begin();
+  LoadCell.start(3000);    // allow 3000ms for stabilization
+  LoadCell.tare();         // set the current reading to zero
+  LoadCell.setCalFactor(1000.0); // adjust calibration factor as needed
+
+  lcd.init();
+  lcd.backlight();
+}
+
+void loop() {
+  LoadCell.update();
+  float weightGrams = LoadCell.getData(); // reading in grams
+  float weightMg = weightGrams * 1000.0;    // convert to milligrams
+
+  lcd.clear();
+
+  // Check if the measured weight is between 50 and 150 mg
+  if (weightMg >= 50 && weightMg <= 150) {
+    lcd.setCursor(0, 0);
+    lcd.print("Sample within");
+    lcd.setCursor(0, 1);
+    lcd.print("range");
+  } else {
+    lcd.setCursor(0, 0);
+    lcd.print("Sample not");
+    lcd.setCursor(0, 1);
+    lcd.print("within range");
+  }
+
+  // Optional: Print weight to the serial monitor for debugging
+  Serial.print("Weight (mg): ");
+  Serial.println(weightMg, 2);
+
+  delay(500); // delay for readability
+}
