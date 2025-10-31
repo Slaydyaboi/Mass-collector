@@ -1,0 +1,1 @@
+This was a project done in Winter 2025, for my GNG1103 class. Currently this is the code that was sent to the arduino for the scraping machine to scrape the sample and then was also programmed to stop after collecting a certain amount of material.
